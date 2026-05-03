@@ -1,0 +1,28 @@
+from ortools.sat.python import cp_model
+
+class SolveResult:
+    def __init__(self, feasible: bool, details: dict):
+        self.feasible = feasible
+        self.details = details
+
+async def generate_timetable(db, weights: dict) -> SolveResult:
+    model = cp_model.CpModel()
+
+    # TODO: charger données DB
+    # classes, niveaux, matieres, profs, prof_matieres, salles, exigences, indispos, slots
+
+    # TODO: construire variables e et a (seulement combinaisons valides)
+    # TODO: contraintes fortes
+    # TODO: anti-trous + surplus mutualisation >2 + fin tardive
+
+    solver = cp_model.CpSolver()
+    solver.parameters.max_time_in_seconds = 30.0
+    solver.parameters.num_search_workers = 8
+
+    status = solver.Solve(model)
+
+    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        return SolveResult(False, {"reason": "Aucune solution trouvée"})
+
+    # TODO: persister cours_planifie + cours_planifie_classe
+    return SolveResult(True, {"status": "OK"})

@@ -1,0 +1,18 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.db import get_db
+from app.api.deps import require_roles
+from app.models.user import Role
+
+router = APIRouter(prefix="/matieres", tags=["matieres"])
+
+@router.get("", dependencies=[Depends(require_roles(Role.VIEWER, Role.EDITOR, Role.ADMIN))])
+async def list_matieres(db: AsyncSession = Depends(get_db)):
+    ...
+
+@router.post("", dependencies=[Depends(require_roles(Role.EDITOR, Role.ADMIN))])
+async def create_matiere(...):
+    ...
+
+@router.delete("/{id}", dependencies=[Depends(require_roles(Role.ADMIN))])
+async def delete_matiere(id: int, ...):
